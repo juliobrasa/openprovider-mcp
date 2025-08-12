@@ -95,6 +95,67 @@ OPENPROVIDER_PASSWORD=your_password
 DEBUG=false
 ```
 
+## Integration with AI Assistants
+
+### Cursor Integration
+
+To use the Openprovider MCP server with Cursor, you need to add it to your Cursor MCP settings file located at:
+
+```
+~/.cursor/mcp/config.json
+```
+
+Add the following configuration:
+
+```json
+{
+  "servers": {
+    "openprovider": {
+      "command": "node",
+      "args": ["/path/to/openprovider-server/server.js"],
+      "env": {
+        "OPENPROVIDER_USERNAME": "your_username",
+        "OPENPROVIDER_PASSWORD": "your_password",
+        "DEBUG": "false"
+      }
+    }
+  }
+}
+```
+
+### Claude Integration
+
+To use the Openprovider MCP server with Claude, you need to run the server and provide the endpoint to Claude. First, start the server:
+
+```bash
+node server.js --port 3000
+```
+
+Then, in Claude, you can connect to the MCP server using the following configuration:
+
+```
+MCP Server Configuration:
+- Name: openprovider
+- Endpoint: http://localhost:3000
+- Authentication: None (authentication is handled by the server)
+```
+
+You can then use the MCP tools in Claude by using the following syntax:
+
+```
+<mcp name="openprovider" tool="check_domain">
+{
+  "domains": [
+    {
+      "name": "example",
+      "extension": "com"
+    }
+  ],
+  "with_price": true
+}
+</mcp>
+```
+
 ## Usage
 
 Once configured, you can use the Openprovider MCP server with Claude, ChatGPT, Cursor or any other platform that supports the Model Context Protocol.
