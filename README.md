@@ -16,24 +16,69 @@ The Openprovider MCP server provides the following tools:
 
 ## Installation
 
-1. Clone this repository
-   ```
-   git clone git@github.com:hichamdotpage/openprovider-mcp.git
-   cd openprovider-mcp
-   ```
-2. Install dependencies:
-   ```
-   npm install
-   ```
-3. Build the project:
-   ```
-   npm run build
-   ```
+### 1. Install Node.js
 
-4. Test the server:
-   ```
-   npm test
-   ```
+Before installing the MCP server, make sure Node.js 20+ is installed. You can do this via Node Version Manager (nvm):
+
+```bash
+# Install nvm (if not already installed)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Reload shell
+source ~/.bashrc
+
+# Install Node.js 20
+nvm install 20
+
+# Set it as default
+nvm use 20
+```
+
+### 2. Clone the Repository
+
+```bash
+git clone git@github.com:hichamdotpage/openprovider-mcp.git
+cd openprovider-mcp
+```
+
+### 3. Install Dependencies
+
+```bash
+npm install
+```
+
+### 4. Build the Project
+
+```bash
+npm run build
+```
+
+### 5. Test the Server
+
+```bash
+npm test
+```
+
+### 6. Install Globally (Optional)
+
+You can install the MCP server globally to use it as a CLI tool:
+
+```bash
+# Install globally from the local directory
+npm install -g .
+
+# Or with yarn
+yarn global add .
+
+# Or with pnpm
+pnpm add -g .
+```
+
+After installing globally, you can run the server from anywhere using:
+
+```bash
+openprovider-mcp
+```
 
 ## Configuration
 
@@ -152,8 +197,6 @@ To use this workflow:
 2. Set up environment variables for `OPENPROVIDER_USERNAME` and `OPENPROVIDER_PASSWORD`
 3. Make sure the Openprovider MCP server is running locally
 4. Activate and run the workflow
-
-![n8n Workflow Example](https://i.imgur.com/example.png)
 
 ## Contributing
 
