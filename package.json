@@ -1,0 +1,37 @@
+{
+  "name": "openprovider-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Openprovider API integration",
+  "type": "module",
+  "main": "server.js",
+  "bin": {
+    "openprovider-mcp": "./server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:hichamdotpage/openprovider-mcp.git"
+  },
+  "homepage": "https://github.com/hichamdotpage/openprovider-mcp",
+  "bugs": {
+    "url": "https://github.com/hichamdotpage/openprovider-mcp/issues"
+  },
+  "scripts": {
+    "build": "tsc && node -e \"import('fs').then(fs => fs.chmodSync('server.js', '755'))\"",
+    "start": "node server.js",
+    "example:check": "node examples/domain-check.js",
+    "example:register": "node examples/domain-register.js",
+    "test": "node test/test-server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.2",
+    "axios": "^1.6.2",
+    "dotenv": "^16.4.7",
+    "minimist": "^1.2.8"
+  },
+  "devDependencies": {
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
+  }
+}

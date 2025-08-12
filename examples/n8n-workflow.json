@@ -1,0 +1,315 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "domain",
+              "value": "example.com"
+            }
+          ]
+        }
+      },
+      "id": "1",
+      "name": "Set Domain",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Split the domain into name and extension\nconst domain = $input.first().json.domain;\nconst parts = domain.split('.');\n\nif (parts.length < 2) {\n  throw new Error('Invalid domain format. Expected format: name.extension');\n}\n\nconst name = parts.slice(0, parts.length - 1).join('.');\nconst extension = parts[parts.length - 1];\n\nreturn {\n  name,\n  extension\n};"
+      },
+      "id": "2",
+      "name": "Parse Domain",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000",
+        "options": {},
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "jsonrpc",
+              "value": "2.0"
+            },
+            {
+              "name": "method",
+              "value": "execute"
+            },
+            {
+              "name": "params",
+              "value": "={{ {\"tool\": \"login\", \"args\": {\"username\": $env.OPENPROVIDER_USERNAME, \"password\": $env.OPENPROVIDER_PASSWORD}} }}"
+            },
+            {
+              "name": "id",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "id": "3",
+      "name": "Login to Openprovider",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        250,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000",
+        "options": {},
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "jsonrpc",
+              "value": "2.0"
+            },
+            {
+              "name": "method",
+              "value": "execute"
+            },
+            {
+              "name": "params",
+              "value": "={{ {\"tool\": \"check_domain\", \"args\": {\"domains\": [{\"name\": $node[\"Parse Domain\"].json.name, \"extension\": $node[\"Parse Domain\"].json.extension}], \"with_price\": true}} }}"
+            },
+            {
+              "name": "id",
+              "value": "2"
+            }
+          ]
+        }
+      },
+      "id": "4",
+      "name": "Check Domain",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        650,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.result.results[0].status }}",
+              "operation": "equals",
+              "value2": "free"
+            }
+          ]
+        }
+      },
+      "id": "5",
+      "name": "Is Domain Available?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        850,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "content": "=## Domain Check Results\n\n**Domain:** {{ $node[\"Set Domain\"].json.domain }}\n\n**Status:** {{ $node[\"Check Domain\"].json.result.results[0].status }}\n\n**Price:** {{ $node[\"Check Domain\"].json.result.results[0].price.reseller.price }} {{ $node[\"Check Domain\"].json.result.results[0].price.reseller.currency }}\n\n**Domain is available for registration!**",
+        "height": 350,
+        "width": 500
+      },
+      "id": "6",
+      "name": "Domain Available",
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "=## Domain Check Results\n\n**Domain:** {{ $node[\"Set Domain\"].json.domain }}\n\n**Status:** {{ $node[\"Check Domain\"].json.result.results[0].status }}\n\n**Domain is not available for registration.**",
+        "height": 350,
+        "width": 500
+      },
+      "id": "7",
+      "name": "Domain Not Available",
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000",
+        "options": {},
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "jsonrpc",
+              "value": "2.0"
+            },
+            {
+              "name": "method",
+              "value": "execute"
+            },
+            {
+              "name": "params",
+              "value": "={{ {\"tool\": \"list_contacts\", \"args\": {\"limit\": 10, \"offset\": 0}} }}"
+            },
+            {
+              "name": "id",
+              "value": "3"
+            }
+          ]
+        }
+      },
+      "id": "8",
+      "name": "List Contacts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1250,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Set Domain": {
+      "main": [
+        [
+          {
+            "node": "Parse Domain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Domain": {
+      "main": [
+        [
+          {
+            "node": "Login to Openprovider",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Login to Openprovider": {
+      "main": [
+        [
+          {
+            "node": "Check Domain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Domain": {
+      "main": [
+        [
+          {
+            "node": "Is Domain Available?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Domain Available?": {
+      "main": [
+        [
+          {
+            "node": "Domain Available",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Domain Not Available",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Domain Available": {
+      "main": [
+        [
+          {
+            "node": "List Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "",
+  "id": "1",
+  "meta": {
+    "instanceId": "1"
+  },
+  "tags": [
+    {
+      "name": "Openprovider",
+      "color": "#ff9900"
+    },
+    {
+      "name": "Domain",
+      "color": "#00ccff"
+    }
+  ]
+}
