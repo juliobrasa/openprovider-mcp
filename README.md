@@ -6,13 +6,32 @@ This is a Model Context Protocol (MCP) server for Openprovider.com that allows u
 
 The Openprovider MCP server provides the following tools:
 
+### Domain Management
 - **login**: Authenticate with Openprovider and get a token
 - **check_domain**: Check domain availability
 - **register_domain**: Register a new domain
 - **list_domains**: List domains in your Openprovider account
 - **get_domain**: Get domain details
+- **update_domain_nameservers**: Update nameservers for a domain
+
+### Contact Management
 - **list_contacts**: List contacts in your Openprovider account
 - **create_contact**: Create a new contact
+- **update_contact**: Update an existing contact
+- **get_contact**: Get contact details by ID
+- **delete_contact**: Delete a contact by ID
+
+### DNS Zone Management
+- **create_dns_zone**: Create a DNS zone for a domain
+- **list_dns_zones**: List all DNS zones
+- **get_dns_zone**: Get DNS zone details
+- **delete_dns_zone**: Delete a DNS zone
+
+### DNS Records Management
+- **list_dns_records**: List DNS records for a zone
+- **create_dns_record**: Create a DNS record (A, AAAA, CNAME, MX, TXT, etc.)
+- **update_dns_record**: Update a DNS record
+- **delete_dns_record**: Delete a DNS record
 
 ## Installation
 

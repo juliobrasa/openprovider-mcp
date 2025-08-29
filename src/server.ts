@@ -600,6 +600,264 @@ const TOOLS = [
       required: ['id'],
     },
   },
+  // DNS Management Tools
+  {
+    name: 'update_domain_nameservers',
+    description: 'Update nameservers for a domain',
+    method: 'PUT',
+    path: '/domains/{id}/nameservers',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+        name_servers: {
+          type: 'array',
+          description: 'List of nameservers',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                description: 'Nameserver hostname',
+              },
+              ip: {
+                type: 'string',
+                description: 'Nameserver IP address (for glue records)',
+              },
+              ip6: {
+                type: 'string',
+                description: 'Nameserver IPv6 address (for glue records)',
+              },
+            },
+            required: ['name'],
+          },
+        },
+      },
+      required: ['id', 'name_servers'],
+    },
+  },
+  {
+    name: 'create_dns_zone',
+    description: 'Create a DNS zone for a domain',
+    method: 'POST',
+    path: '/dns/zones',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        domain: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              description: 'Domain name without extension',
+            },
+            extension: {
+              type: 'string',
+              description: 'Domain extension (TLD)',
+            },
+          },
+          required: ['name', 'extension'],
+        },
+        type: {
+          type: 'string',
+          description: 'Zone type (master or slave)',
+          enum: ['master', 'slave'],
+          default: 'master',
+        },
+        master_ip: {
+          type: 'string',
+          description: 'Master IP for slave zones',
+        },
+      },
+      required: ['domain'],
+    },
+  },
+  {
+    name: 'list_dns_zones',
+    description: 'List all DNS zones',
+    method: 'GET',
+    path: '/dns/zones',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'number',
+          description: 'Maximum number of zones to return',
+          default: 100,
+        },
+        offset: {
+          type: 'number',
+          description: 'Offset for pagination',
+          default: 0,
+        },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_dns_zone',
+    description: 'Get DNS zone details',
+    method: 'GET',
+    path: '/dns/zones/{name}',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'Zone name (domain.extension)',
+        },
+      },
+      required: ['name'],
+    },
+  },
+  {
+    name: 'delete_dns_zone',
+    description: 'Delete a DNS zone',
+    method: 'DELETE',
+    path: '/dns/zones/{name}',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'Zone name (domain.extension)',
+        },
+      },
+      required: ['name'],
+    },
+  },
+  {
+    name: 'list_dns_records',
+    description: 'List DNS records for a zone',
+    method: 'GET',
+    path: '/dns/zones/{name}/records',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'Zone name (domain.extension)',
+        },
+        type: {
+          type: 'string',
+          description: 'Filter by record type (A, AAAA, CNAME, MX, TXT, etc.)',
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number of records to return',
+          default: 100,
+        },
+        offset: {
+          type: 'number',
+          description: 'Offset for pagination',
+          default: 0,
+        },
+      },
+      required: ['name'],
+    },
+  },
+  {
+    name: 'create_dns_record',
+    description: 'Create a DNS record',
+    method: 'POST',
+    path: '/dns/zones/{zone}/records',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        zone: {
+          type: 'string',
+          description: 'Zone name (domain.extension)',
+        },
+        name: {
+          type: 'string',
+          description: 'Record name (subdomain or @ for root)',
+        },
+        type: {
+          type: 'string',
+          description: 'Record type',
+          enum: ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'SPF', 'NS', 'SOA', 'PTR', 'SRV', 'CAA'],
+        },
+        value: {
+          type: 'string',
+          description: 'Record value (IP address, hostname, text, etc.)',
+        },
+        ttl: {
+          type: 'number',
+          description: 'Time to live in seconds',
+          default: 3600,
+        },
+        prio: {
+          type: 'number',
+          description: 'Priority (for MX and SRV records)',
+        },
+      },
+      required: ['zone', 'name', 'type', 'value'],
+    },
+  },
+  {
+    name: 'update_dns_record',
+    description: 'Update a DNS record',
+    method: 'PUT',
+    path: '/dns/zones/{zone}/records/{id}',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        zone: {
+          type: 'string',
+          description: 'Zone name (domain.extension)',
+        },
+        id: {
+          type: 'number',
+          description: 'Record ID',
+        },
+        name: {
+          type: 'string',
+          description: 'Record name (subdomain or @ for root)',
+        },
+        type: {
+          type: 'string',
+          description: 'Record type',
+          enum: ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'SPF', 'NS', 'SOA', 'PTR', 'SRV', 'CAA'],
+        },
+        value: {
+          type: 'string',
+          description: 'Record value (IP address, hostname, text, etc.)',
+        },
+        ttl: {
+          type: 'number',
+          description: 'Time to live in seconds',
+        },
+        prio: {
+          type: 'number',
+          description: 'Priority (for MX and SRV records)',
+        },
+      },
+      required: ['zone', 'id'],
+    },
+  },
+  {
+    name: 'delete_dns_record',
+    description: 'Delete a DNS record',
+    method: 'DELETE',
+    path: '/dns/zones/{zone}/records/{id}',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        zone: {
+          type: 'string',
+          description: 'Zone name (domain.extension)',
+        },
+        id: {
+          type: 'number',
+          description: 'Record ID',
+        },
+      },
+      required: ['zone', 'id'],
+    },
+  },
 ];
 
 /**
