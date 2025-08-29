@@ -858,6 +858,567 @@ const TOOLS = [
       required: ['zone', 'id'],
     },
   },
+  // Domain Transfer Management
+  {
+    name: 'transfer_domain',
+    description: 'Transfer a domain to Openprovider',
+    method: 'POST',
+    path: '/domains/transfer',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        domain: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              description: 'Domain name without extension',
+            },
+            extension: {
+              type: 'string',
+              description: 'Domain extension (TLD)',
+            },
+          },
+          required: ['name', 'extension'],
+        },
+        auth_code: {
+          type: 'string',
+          description: 'Transfer authorization code (EPP code)',
+        },
+        owner_handle: {
+          type: 'string',
+          description: 'Owner contact handle',
+        },
+        admin_handle: {
+          type: 'string',
+          description: 'Administrative contact handle',
+        },
+        tech_handle: {
+          type: 'string',
+          description: 'Technical contact handle',
+        },
+        billing_handle: {
+          type: 'string',
+          description: 'Billing contact handle',
+        },
+        name_servers: {
+          type: 'array',
+          description: 'List of nameservers',
+          items: {
+            type: 'object',
+            properties: {
+              name: {
+                type: 'string',
+                description: 'Nameserver hostname',
+              },
+            },
+            required: ['name'],
+          },
+        },
+        use_domicile: {
+          type: 'boolean',
+          description: 'Use domicile service',
+          default: false,
+        },
+        is_private_whois_enabled: {
+          type: 'boolean',
+          description: 'Enable private WHOIS',
+          default: false,
+        },
+      },
+      required: ['domain', 'auth_code', 'owner_handle'],
+    },
+  },
+  {
+    name: 'check_transfer_status',
+    description: 'Check the status of a domain transfer',
+    method: 'GET',
+    path: '/domains/transfer/{id}',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Transfer ID',
+        },
+      },
+      required: ['id'],
+    },
+  },
+  // Domain Renewal
+  {
+    name: 'renew_domain',
+    description: 'Renew a domain registration',
+    method: 'POST',
+    path: '/domains/{id}/renew',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+        period: {
+          type: 'number',
+          description: 'Renewal period in years',
+          default: 1,
+        },
+      },
+      required: ['id'],
+    },
+  },
+  // WHOIS Privacy Management
+  {
+    name: 'enable_whois_privacy',
+    description: 'Enable WHOIS privacy protection for a domain',
+    method: 'PUT',
+    path: '/domains/{id}/privacy',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+        enabled: {
+          type: 'boolean',
+          description: 'Enable or disable WHOIS privacy',
+          default: true,
+        },
+      },
+      required: ['id'],
+    },
+  },
+  {
+    name: 'get_whois_info',
+    description: 'Get WHOIS information for a domain',
+    method: 'GET',
+    path: '/domains/{id}/whois',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+      },
+      required: ['id'],
+    },
+  },
+  // SSL Certificate Management
+  {
+    name: 'list_ssl_products',
+    description: 'List available SSL certificate products',
+    method: 'GET',
+    path: '/ssl/products',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'number',
+          description: 'Maximum number of products to return',
+          default: 100,
+        },
+        offset: {
+          type: 'number',
+          description: 'Offset for pagination',
+          default: 0,
+        },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'order_ssl_certificate',
+    description: 'Order an SSL certificate',
+    method: 'POST',
+    path: '/ssl/orders',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        product_id: {
+          type: 'number',
+          description: 'SSL product ID',
+        },
+        period: {
+          type: 'number',
+          description: 'Certificate validity period in years',
+          default: 1,
+        },
+        csr: {
+          type: 'string',
+          description: 'Certificate Signing Request (CSR)',
+        },
+        domain_validation_methods: {
+          type: 'array',
+          description: 'Domain validation methods',
+          items: {
+            type: 'object',
+            properties: {
+              domain: {
+                type: 'string',
+                description: 'Domain to validate',
+              },
+              method: {
+                type: 'string',
+                description: 'Validation method',
+                enum: ['dns', 'email', 'file'],
+              },
+            },
+            required: ['domain', 'method'],
+          },
+        },
+        approver_email: {
+          type: 'string',
+          description: 'Email address for domain validation',
+        },
+        organization_handle: {
+          type: 'string',
+          description: 'Organization contact handle',
+        },
+        technical_handle: {
+          type: 'string',
+          description: 'Technical contact handle',
+        },
+      },
+      required: ['product_id', 'csr'],
+    },
+  },
+  {
+    name: 'list_ssl_orders',
+    description: 'List SSL certificate orders',
+    method: 'GET',
+    path: '/ssl/orders',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: {
+          type: 'number',
+          description: 'Maximum number of orders to return',
+          default: 100,
+        },
+        offset: {
+          type: 'number',
+          description: 'Offset for pagination',
+          default: 0,
+        },
+        status: {
+          type: 'string',
+          description: 'Filter by order status',
+          enum: ['pending', 'active', 'cancelled', 'expired'],
+        },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'get_ssl_order',
+    description: 'Get SSL certificate order details',
+    method: 'GET',
+    path: '/ssl/orders/{id}',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'SSL order ID',
+        },
+      },
+      required: ['id'],
+    },
+  },
+  {
+    name: 'reissue_ssl_certificate',
+    description: 'Reissue an SSL certificate',
+    method: 'POST',
+    path: '/ssl/orders/{id}/reissue',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'SSL order ID',
+        },
+        csr: {
+          type: 'string',
+          description: 'New Certificate Signing Request (CSR)',
+        },
+        domain_validation_methods: {
+          type: 'array',
+          description: 'Domain validation methods',
+          items: {
+            type: 'object',
+            properties: {
+              domain: {
+                type: 'string',
+                description: 'Domain to validate',
+              },
+              method: {
+                type: 'string',
+                description: 'Validation method',
+                enum: ['dns', 'email', 'file'],
+              },
+            },
+            required: ['domain', 'method'],
+          },
+        },
+      },
+      required: ['id', 'csr'],
+    },
+  },
+  {
+    name: 'renew_ssl_certificate',
+    description: 'Renew an SSL certificate',
+    method: 'POST',
+    path: '/ssl/orders/{id}/renew',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'SSL order ID',
+        },
+        period: {
+          type: 'number',
+          description: 'Renewal period in years',
+          default: 1,
+        },
+      },
+      required: ['id'],
+    },
+  },
+  {
+    name: 'cancel_ssl_order',
+    description: 'Cancel an SSL certificate order',
+    method: 'DELETE',
+    path: '/ssl/orders/{id}',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'SSL order ID',
+        },
+      },
+      required: ['id'],
+    },
+  },
+  // DNSSEC Management
+  {
+    name: 'enable_dnssec',
+    description: 'Enable DNSSEC for a domain',
+    method: 'PUT',
+    path: '/domains/{id}/dnssec',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+        keys: {
+          type: 'array',
+          description: 'DNSSEC keys',
+          items: {
+            type: 'object',
+            properties: {
+              flags: {
+                type: 'number',
+                description: 'Key flags',
+              },
+              alg: {
+                type: 'number',
+                description: 'Algorithm',
+              },
+              protocol: {
+                type: 'number',
+                description: 'Protocol',
+              },
+              pub_key: {
+                type: 'string',
+                description: 'Public key',
+              },
+            },
+            required: ['flags', 'alg', 'protocol', 'pub_key'],
+          },
+        },
+      },
+      required: ['id'],
+    },
+  },
+  {
+    name: 'disable_dnssec',
+    description: 'Disable DNSSEC for a domain',
+    method: 'DELETE',
+    path: '/domains/{id}/dnssec',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+      },
+      required: ['id'],
+    },
+  },
+  {
+    name: 'get_dnssec_info',
+    description: 'Get DNSSEC information for a domain',
+    method: 'GET',
+    path: '/domains/{id}/dnssec',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+      },
+      required: ['id'],
+    },
+  },
+  // Domain Search and Suggestions
+  {
+    name: 'search_domains',
+    description: 'Search for available domains with suggestions',
+    method: 'POST',
+    path: '/domains/search',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        keyword: {
+          type: 'string',
+          description: 'Search keyword for domain suggestions',
+        },
+        extensions: {
+          type: 'array',
+          description: 'List of TLD extensions to check',
+          items: {
+            type: 'string',
+          },
+          default: ['com', 'net', 'org', 'io', 'co'],
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum number of suggestions',
+          default: 20,
+        },
+        include_premium: {
+          type: 'boolean',
+          description: 'Include premium domains in results',
+          default: false,
+        },
+      },
+      required: ['keyword'],
+    },
+  },
+  // Domain Lock Management
+  {
+    name: 'lock_domain',
+    description: 'Lock a domain to prevent unauthorized transfers',
+    method: 'PUT',
+    path: '/domains/{id}/lock',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+        lock_type: {
+          type: 'string',
+          description: 'Type of lock',
+          enum: ['registrar', 'registry'],
+          default: 'registrar',
+        },
+      },
+      required: ['id'],
+    },
+  },
+  {
+    name: 'unlock_domain',
+    description: 'Unlock a domain',
+    method: 'DELETE',
+    path: '/domains/{id}/lock',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+        lock_type: {
+          type: 'string',
+          description: 'Type of lock',
+          enum: ['registrar', 'registry'],
+          default: 'registrar',
+        },
+      },
+      required: ['id'],
+    },
+  },
+  // Email Forwarding
+  {
+    name: 'create_email_forward',
+    description: 'Create email forwarding for a domain',
+    method: 'POST',
+    path: '/domains/{id}/email-forwards',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+        source: {
+          type: 'string',
+          description: 'Source email address (e.g., info@domain.com)',
+        },
+        destination: {
+          type: 'string',
+          description: 'Destination email address',
+        },
+      },
+      required: ['id', 'source', 'destination'],
+    },
+  },
+  {
+    name: 'list_email_forwards',
+    description: 'List email forwards for a domain',
+    method: 'GET',
+    path: '/domains/{id}/email-forwards',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+      },
+      required: ['id'],
+    },
+  },
+  {
+    name: 'delete_email_forward',
+    description: 'Delete an email forward',
+    method: 'DELETE',
+    path: '/domains/{id}/email-forwards/{forward_id}',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'Domain ID',
+        },
+        forward_id: {
+          type: 'number',
+          description: 'Email forward ID',
+        },
+      },
+      required: ['id', 'forward_id'],
+    },
+  },
 ];
 
 /**

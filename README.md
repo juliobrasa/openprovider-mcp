@@ -4,34 +4,65 @@ This is a Model Context Protocol (MCP) server for Openprovider.com that allows u
 
 ## Features
 
-The Openprovider MCP server provides the following tools:
+The Openprovider MCP server provides comprehensive domain and hosting management tools:
 
-### Domain Management
+### 🔐 Authentication
 - **login**: Authenticate with Openprovider and get a token
+
+### 🌐 Domain Management
 - **check_domain**: Check domain availability
+- **search_domains**: Search for available domains with AI-powered suggestions
 - **register_domain**: Register a new domain
 - **list_domains**: List domains in your Openprovider account
 - **get_domain**: Get domain details
+- **renew_domain**: Renew domain registration
 - **update_domain_nameservers**: Update nameservers for a domain
+- **lock_domain**: Lock domain to prevent unauthorized transfers
+- **unlock_domain**: Unlock a domain
 
-### Contact Management
+### 🔄 Domain Transfer
+- **transfer_domain**: Transfer a domain to Openprovider
+- **check_transfer_status**: Check the status of a domain transfer
+
+### 👥 Contact Management
 - **list_contacts**: List contacts in your Openprovider account
 - **create_contact**: Create a new contact
 - **update_contact**: Update an existing contact
 - **get_contact**: Get contact details by ID
 - **delete_contact**: Delete a contact by ID
 
-### DNS Zone Management
+### 🔒 Privacy & Security
+- **enable_whois_privacy**: Enable WHOIS privacy protection
+- **get_whois_info**: Get WHOIS information for a domain
+- **enable_dnssec**: Enable DNSSEC for enhanced security
+- **disable_dnssec**: Disable DNSSEC
+- **get_dnssec_info**: Get DNSSEC configuration details
+
+### 🗂️ DNS Zone Management
 - **create_dns_zone**: Create a DNS zone for a domain
 - **list_dns_zones**: List all DNS zones
 - **get_dns_zone**: Get DNS zone details
 - **delete_dns_zone**: Delete a DNS zone
 
-### DNS Records Management
+### 📝 DNS Records Management
 - **list_dns_records**: List DNS records for a zone
-- **create_dns_record**: Create a DNS record (A, AAAA, CNAME, MX, TXT, etc.)
-- **update_dns_record**: Update a DNS record
-- **delete_dns_record**: Delete a DNS record
+- **create_dns_record**: Create DNS records (A, AAAA, CNAME, MX, TXT, SPF, NS, SOA, PTR, SRV, CAA)
+- **update_dns_record**: Update existing DNS records
+- **delete_dns_record**: Delete DNS records
+
+### 🔐 SSL Certificate Management
+- **list_ssl_products**: Browse available SSL certificate products
+- **order_ssl_certificate**: Order a new SSL certificate
+- **list_ssl_orders**: List all SSL certificate orders
+- **get_ssl_order**: Get SSL order details
+- **reissue_ssl_certificate**: Reissue an SSL certificate
+- **renew_ssl_certificate**: Renew an SSL certificate
+- **cancel_ssl_order**: Cancel an SSL order
+
+### 📧 Email Management
+- **create_email_forward**: Set up email forwarding
+- **list_email_forwards**: List email forwarding rules
+- **delete_email_forward**: Remove email forwarding
 
 ## Installation
 
