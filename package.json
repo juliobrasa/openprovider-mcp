@@ -1,11 +1,12 @@
 {
-  "name": "openprovider-mcp",
-  "version": "0.1.0",
-  "description": "MCP server for Openprovider API integration",
+  "name": "openprovider-mcp-enhanced",
+  "version": "2.0.0",
+  "description": "Enhanced MCP server for OpenProvider API with complete domain, DNS and nameserver management",
   "type": "module",
-  "main": "server.js",
+  "main": "dist/openprovider-enhanced.js",
   "bin": {
-    "openprovider-mcp": "./server.js"
+    "openprovider-mcp": "./server.js",
+    "openprovider-mcp-enhanced": "./dist/openprovider-enhanced.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,9 @@
   },
   "scripts": {
     "build": "tsc && node -e \"import('fs').then(fs => fs.chmodSync('server.js', '755'))\"",
+    "build:enhanced": "tsc src/openprovider-enhanced.ts --outDir dist --module esnext --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck",
     "start": "node server.js",
+    "start:enhanced": "node dist/openprovider-enhanced.js",
     "example:check": "node examples/domain-check.js",
     "example:register": "node examples/domain-register.js",
     "test": "node test/test-server.js"
