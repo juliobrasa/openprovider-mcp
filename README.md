@@ -109,6 +109,11 @@ npm run build
 npm test
 ```
 
+The test suite exercises the CLI `--help` path to make sure the binary is
+callable and that its usage text mentions the most important flags and
+environment variables. This runs without touching the Openprovider API, so you
+can run it safely on any machine or CI environment without real credentials.
+
 ### 6. Install Globally (Optional)
 
 You can install the MCP server globally to use it as a CLI tool:

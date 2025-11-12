@@ -1,54 +1,61 @@
+import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
 /**
- * Simple test script to verify that the Openprovider MCP server is working correctly
+ * Spawns the server CLI with the provided arguments and captures stdout/stderr.
  */
+function runCli(args = []) {
+  const serverPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'server.js');
 
-// Import required modules
-const axios = require('axios');
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [serverPath, ...args], {
+      env: {
+        ...process.env,
+        // Ensure tests do not accidentally try to talk to the Openprovider API.
+        OPENPROVIDER_USERNAME: process.env.OPENPROVIDER_USERNAME ?? '',
+        OPENPROVIDER_PASSWORD: process.env.OPENPROVIDER_PASSWORD ?? '',
+      },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
 
-// MCP server endpoint (assuming it's running locally)
-const MCP_SERVER_URL = 'http://localhost:3000';
+    let stdout = '';
+    let stderr = '';
 
-// Test function to call the MCP server
-async function testMcpServer() {
-  try {
-    // Test the server's health endpoint
-    console.log('Testing MCP server health...');
-    const healthResponse = await axios.post(MCP_SERVER_URL, {
-      jsonrpc: '2.0',
-      method: 'health',
-      id: 1
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk.toString();
     });
-    
-    console.log('Health check response:', healthResponse.data);
-    
-    // Test the server's describe endpoint
-    console.log('\nTesting MCP server describe...');
-    const describeResponse = await axios.post(MCP_SERVER_URL, {
-      jsonrpc: '2.0',
-      method: 'describe',
-      id: 2
+
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk.toString();
     });
-    
-    console.log('Server name:', describeResponse.data.result.name);
-    console.log('Server description:', describeResponse.data.result.description);
-    console.log('Available tools:');
-    
-    const tools = describeResponse.data.result.tools;
-    Object.keys(tools).forEach(toolName => {
-      console.log(`- ${toolName}: ${tools[toolName].description}`);
+
+    child.on('error', (error) => reject(error));
+
+    child.on('close', (code) => {
+      if (code !== 0) {
+        const error = new Error(`CLI exited with code ${code}. Stdout: ${stdout}\nStderr: ${stderr}`);
+        return reject(error);
+      }
+
+      resolve({ stdout, stderr });
     });
-    
-    console.log('\nMCP server is working correctly!');
-    
-  } catch (error) {
-    console.error('Error testing MCP server:', error.response?.data || error.message);
-    
-    if (error.code === 'ECONNREFUSED') {
-      console.error('\nMake sure the MCP server is running. Start it with:');
-      console.error('npm start');
-    }
-  }
+  });
 }
 
-// Run the test function
-testMcpServer();
+async function main() {
+  console.log('Verifying Openprovider MCP CLI help output...');
+  const { stdout } = await runCli(['--help']);
+
+  assert.match(stdout, /Openprovider MCP Server/, 'Help output should include the server title');
+  assert.match(stdout, /--help/, 'Help output should mention the --help flag');
+  assert.match(stdout, /OPENPROVIDER_USERNAME/, 'Help output should mention the required environment variables');
+
+  console.log('CLI help text looks good.');
+}
+
+main().catch((error) => {
+  console.error('Test failed:', error);
+  process.exitCode = 1;
+});
